@@ -360,19 +360,20 @@ def runForAllWeights():
     global DoRender
     DoRender = False
     global framesToPlay
-    framesToPlay = 25
+    framesToPlay = 5
 
     mypath = os.path.join(str(Path().absolute()), "trained_weights")
     main() #set params
-    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-    print(onlyfiles)
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.endswith(".h5")]
+    # print(onlyfiles)
     onlyfiles.sort()
+    print(onlyfiles)
     for WeightsName in onlyfiles:
-        if WeightsName.endswith(".h5"):
-            print("######################## Playing ####################################")
-            # print(WeightsName[WeightsName.find("v4-")+3:])
-            print(WeightsName)
-            testPlay(WeightsName)
+        # if WeightsName.endswith(".h5"):
+        print("######################## Playing ####################################")
+        # print(WeightsName[WeightsName.find("v4-")+3:])
+        print(WeightsName)
+        testPlay(WeightsName)
 
 
 

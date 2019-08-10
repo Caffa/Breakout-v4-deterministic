@@ -1,5 +1,0 @@
-5 Episodes_1259 Frames: Average reward over all Episodes: 6.2
-5 Episodes_5179 Frames: Average reward over all Episodes: 76.6
-5 Episodes_3770 Frames: Average reward over all Episodes: 78.53333333333333
-5 Episodes_6458 Frames: Average reward over all Episodes: 104.55
-5 Episodes_5877 Frames: Average reward over all Episodes: 103.68
