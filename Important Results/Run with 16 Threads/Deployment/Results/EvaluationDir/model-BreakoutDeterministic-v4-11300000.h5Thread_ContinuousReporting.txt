@@ -1,0 +1,5 @@
+model-BreakoutDeterministic-v4-11300000.h5 Episode     1 has Reward:   83 with Frames  1614; 
+model-BreakoutDeterministic-v4-11300000.h5 Episode     2 has Reward:   86 with Frames  3072; 
+model-BreakoutDeterministic-v4-11300000.h5 Episode     3 has Reward:   57 with Frames  4308; 
+model-BreakoutDeterministic-v4-11300000.h5 Episode     4 has Reward:   58 with Frames  5327; 
+model-BreakoutDeterministic-v4-11300000.h5 Episode     5 has Reward:   64 with Frames  6813; 

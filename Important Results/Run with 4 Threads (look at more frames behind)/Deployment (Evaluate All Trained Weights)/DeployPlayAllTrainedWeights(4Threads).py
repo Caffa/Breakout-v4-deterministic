@@ -62,40 +62,38 @@ class TestingActor(object):
 
         _, self.policy_net, self.load_net, adv = build_network(self.observation_shape, action_space.n)
 
-        # self.value_net.compile(optimizer='rmsprop', loss='mse')
-        # self.policy_net.compile(optimizer='rmsprop', loss='categorical_crossentropy')
         self.load_net.compile(optimizer=RMSprop(clipnorm=1.), loss='mse')  # clipnorm=1.
-        # self.load_net.compile(optimizer='rmsprop', loss='mse', loss_weights=[0.5, 1.])  # dummy loss
+
 
         self.action_space = action_space
         self.observations = np.zeros((self.input_depth * self.past_range,) + screen)
-        # self.observations = np.zeros(self.observation_shape)
-        # self.last_observations = np.zeros_like(self.observations)
-        #
-        #
-        # self.n_step_observations = deque(maxlen=n_step)
-        # self.n_step_actions = deque(maxlen=n_step)
-        # self.n_step_rewards = deque(maxlen=n_step)
-        # self.n_step = n_step
-        # self.discount = discount
-        # self.counter = 0
 
     def init_episode(self, observation):
+        # print("Init Eps")
         for _ in range(self.past_range):
             self.save_observation(observation)
 
     def getAction(self, observation):
         self.save_observation(observation)
         policy = self.policy_net.predict(self.observations[None, ...])[0]
-        policy /= np.sum(policy)  # numpy, why?
+        policy /= np.sum(policy)
         return np.random.choice(np.arange(self.action_space.n), p=policy)
 
     def save_observation(self, observation):
+        # print("save observation")
         self.observations = np.roll(self.observations, -self.input_depth, axis=0)
         self.observations[-self.input_depth:, ...] = self.transform_screen(observation)
 
     def transform_screen(self, data):
-        return rgb2gray(resize(data, self.screen))[None, ...]
+        img = resize(data, self.screen)
+        gray = rgb2gray(img)[None, ...]
+        # print(img)
+        return gray
+
+def writeOneLinerBug(name):
+    f=open(os.path.join(rootdir, "Bug_Thread.txt"), "a+")
+    f.write(name + " doesn't act")
+    f.close()
 
 
 def writeOneLiner(msg, name):
@@ -105,7 +103,7 @@ def writeOneLiner(msg, name):
 
 def writeOneLinerAverageRewards(rewardList, name):
     f=open(os.path.join(rootdir, "Average Rewards.txt"), "a+")
-    msg = str(name) + " has average rewards over 10 episodes: " + str(statistics.mean(rewardList))
+    msg = str(name) + " has average rewards over 10 episodes: " + str(statistics.mean(rewardList)) + "\n"
     f.write(msg)
     f.close()
 
@@ -253,6 +251,10 @@ def main(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, Batc
     env = gym.make('BreakoutDeterministic-v4')
 
 
+def testCheckGrey(data, type, msg):
+    img = Image.fromarray(data, type)
+    img.show()
+    img.save(msg + ".JPEG")
 
 
 
@@ -299,6 +301,7 @@ def saveThisImg(observation, imgPath):
 
 
 def testPlay(WeightsName):
+    print("Test Playing begins")
     global rootdir
     global env
     global arguments
@@ -306,19 +309,28 @@ def testPlay(WeightsName):
 
     agent = TestingActor(env.action_space)
     # model_file = arguments["UseSavedCheckpoint"]
+    print("Loading Weights")
     agent.load_net.load_weights(os.path.join(str(Path().absolute()), "trained_weights", WeightsName))
+    print("Finish Loading Weights")
     # agent.load_net.load_weights(WeightsName)
     game = 1
 
     frames = 0
     global DoRender
     for _ in range(framesToPlay):
+        actionList = []
+        numberTimeRun = 0
         all_rewards =[]
         done = False
         episode_reward = 0
         noops = 0
+        Acting = True
         # init game
         observation = env.reset()
+        # testCheckGrey(observation, "RGB", "RGB")
+        # testCheckGrey(agent.transform_screen(observation), "RGB", "RGB")
+        # testCheckGrey(observation, "HSV", "HSV")
+        # print("First Observation")
         agent.init_episode(observation)
         # play one game
         print('Game #%8d; ' % (game,), end='')
@@ -327,8 +339,39 @@ def testPlay(WeightsName):
             if DoRender:
                 env.render()
             action = agent.getAction(observation)
+            if arguments["AutoFire"] and numberTimeRun == 0:
+                numberTimeRun += 1
+                print("Auto-fire first shot")
+                #auto fire for first shot
+                action = 1
+                if Acting:
+                    #if twice in a row didn't do anything, quit
+                    msg = WeightsName + " is bad - doesn't fire for ep twice in a row"
+                    # print(msg)
+                    writeOneLinerBug(msg)
+                    done = True
+
+                Acting = False
+            elif frames % 50 == 0:
+                print("Do action " + str(env.unwrapped.get_action_meanings()[action]))
+                Acting = True
+
+                if len(actionList) > 100:
+                    if len(set(actionList))==1:
+                        #all the actions are the same
+                        msg = WeightsName + " is bad - always the same action: " + str(env.unwrapped.get_action_meanings()[action])
+                        print(msg)
+                        writeOneLinerBug(msg)
+                        done = True
+                        framesToPlay = 1
+                        break;
+            else:
+                actionList.append(action)
+
+
             observation, reward, done, _ = env.step(action)
             episode_reward += reward
+
             # ----
             if action == 0:
                 noops += 1
@@ -337,9 +380,10 @@ def testPlay(WeightsName):
             if noops > 100:
                 break
 
+
         print('Reward %5d; ' % (episode_reward,))
         all_rewards.append(episode_reward)
-        msg = str(WeightsName) +' Episode %5d has Reward: %4d; \n' % (game, episode_reward,)
+        msg = str(WeightsName) +' Episode %5d has Reward: %4d with Frames %5d; \n' % (game, episode_reward, frames)
         writeOneLiner(msg, WeightsName)
         csvPath = os.path.join(rootdir, WeightsName +"_Rewards.csv")
         imgPath = os.path.join(rootdir, WeightsName + "_Episode" + str(game) +"_End.png")
@@ -349,7 +393,7 @@ def testPlay(WeightsName):
             print("Plot Reward Curve")
             saveCSV(WeightsName, all_rewards)
             # rewardList = appendCSV(1, all_rewards, csvPath)
-            renderRewardGraphFromDF(WeightsName, all_rewards)
+            # renderRewardGraphFromDF(WeightsName, all_rewards)
             writeOneLinerAverageRewards(all_rewards, WeightsName)
 
         game += 1
@@ -358,7 +402,7 @@ def testPlay(WeightsName):
 
 def runForAllWeights():
     global DoRender
-    DoRender = False
+    DoRender = True
     global framesToPlay
     framesToPlay = 5
 
@@ -374,8 +418,6 @@ def runForAllWeights():
         # print(WeightsName[WeightsName.find("v4-")+3:])
         print(WeightsName)
         testPlay(WeightsName)
-
-
 
 
 
