@@ -1,0 +1,10 @@
+model-BreakoutDeterministic-v4-10800000.h5 Episode     1 has Reward:   21; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     2 has Reward:  350; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     3 has Reward:   41; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     4 has Reward:   44; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     5 has Reward:  375; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     6 has Reward:   37; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     7 has Reward:   25; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     8 has Reward:   51; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode     9 has Reward:   22; 
+model-BreakoutDeterministic-v4-10800000.h5 Episode    10 has Reward:   22; 
