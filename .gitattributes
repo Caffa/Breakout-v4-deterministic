@@ -1,0 +1,6 @@
+Breakout[[:space:]]Gifs filter=lfs diff=lfs merge=lfs -text
+Important[[:space:]]Results filter=lfs diff=lfs merge=lfs -text
+Parameters filter=lfs diff=lfs merge=lfs -text
+Previous filter=lfs diff=lfs merge=lfs -text
+README.md filter=lfs diff=lfs merge=lfs -text
+Submission filter=lfs diff=lfs merge=lfs -text
