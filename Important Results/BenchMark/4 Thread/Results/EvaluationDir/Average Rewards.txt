@@ -1,0 +1,7 @@
+model-BreakoutDeterministic-v4-10000000.h5 has average rewards over 10 episodes: 321.0
+model-BreakoutDeterministic-v4-10299968.h5 has average rewards over 10 episodes: 350.0
+model-BreakoutDeterministic-v4-10400000.h5 has average rewards over 10 episodes: 106.0
+model-BreakoutDeterministic-v4-10899968.h5 has average rewards over 10 episodes: 185.0
+model-BreakoutDeterministic-v4-9299968.h5 has average rewards over 10 episodes: 324.0
+model-BreakoutDeterministic-v4-9600000.h5 has average rewards over 10 episodes: 259.0
+model-BreakoutDeterministic-v4-9699968.h5 has average rewards over 10 episodes: 91.0
