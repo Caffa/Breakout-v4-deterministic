@@ -18,6 +18,12 @@ from keras.models import Model
 from keras.layers import Input, Conv2D, Flatten, Dense
 import time
 from keras import backend as K
+import signal
+from PIL import Image
+
+from matplotlib import pyplot as plt
+from os import listdir
+from os.path import isfile, join
 
 
 
@@ -632,9 +638,10 @@ def testPlay(WeightsName):
 
 def runForAllWeights(threads):
     global DoRender
-    DoRender = False
+    DoRender = True
     global framesToPlay
-    framesToPlay = 100
+    # framesToPlay = 100
+    framesToPlay = int(framesToTestInput.value)
 
     mypath = os.path.join(str(Path().absolute()), "trained_weights")
     set_test_params(NumberProcesses = threads) #set params
@@ -1028,8 +1035,9 @@ def set_test_params(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 800
 def testShow4Threads():
     runForAllWeights(4)
 
-def testShow4Threads():
+def testShow16Threads():
     runForAllWeights(16)
+
 
 def trainAppliedParams():
 
@@ -1076,11 +1084,11 @@ close_button = PushButton(window, text="Train", command=close_window)
 
 
 # app = App(title="Breakout A3C")
-build_a_snowman = app.yesno("Training", "Do you want to use the default parameters?")
-if build_a_snowman == False:
-    app.info("Setting Parameters Info", "Default values are shown in entry box, if checkpoint is used then default values for that checkpoint will be used as necessary.")
-else:
-    app.info("Info", "Default Parameters as specificed in Report: NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, BatchSize = 64, SwapRate = 100, SavePolicyEvery = 100000, UseSavedCheckpoint = 0, ExperienceQueueSize = 64, N_steps = 10, beta = 0.01, autoFire = True, RenderEvery = 50, LookBackFrames = 8")
+# build_a_snowman = app.yesno("Training", "Do you want to use the default parameters?")
+# if build_a_snowman == False:
+#     app.info("Setting Parameters Info", "Default values are shown in entry box, if checkpoint is used then default values for that checkpoint will be used as necessary.")
+# else:
+#     app.info("Info", "Default Parameters as specificed in Report: NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, BatchSize = 64, SwapRate = 100, SavePolicyEvery = 100000, UseSavedCheckpoint = 0, ExperienceQueueSize = 64, N_steps = 10, beta = 0.01, autoFire = True, RenderEvery = 50, LookBackFrames = 8")
 
 ### prompt if run with default (main()) or set parameters main(put params here)
 ### Run Train (put warning that gui will freeze + button launches main())
@@ -1125,8 +1133,9 @@ col4 = Box(app, layout="grid", grid=[0,0], align="top")
 buttonTrain = PushButton(col4, text= "Train with Default Parameters - 4 Threads, Look back 8 Frames", grid=[0,0], command=main) #starts training with default params
 # buttonTest = PushButton(col4, text= "Train with Default Parameters", command=StartTesting, grid=[0,0], command=main) #starts training with default params
 
-buttonTest = PushButton(col4, text= "Test for X frames - 4 Threads, Look back 8 Frames", grid=[0,1], command=play) #test for
-framesToTestLabel = Text(col4, text="Test for _ Episodes:", grid=[0,2])
-framesToTestInput = TextBox(col4, text="10", grid=[1,2])
+buttonTestFour = PushButton(col4, text= "Test for X frames - 4 Threads, Look back 8 Frames", grid=[0,1], command=testShow4Threads) #test for
+buttonTestSixTeen = PushButton(col4, text= "Test for X frames - 4 Threads, Look back 8 Frames", grid=[0,2], command=testShow16Threads) #test for
+framesToTestLabel = Text(col4, text="Test for _ Episodes:", grid=[0,3])
+framesToTestInput = TextBox(col4, text="10", grid=[1,3])
 
 app.display()

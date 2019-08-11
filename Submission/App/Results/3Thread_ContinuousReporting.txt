@@ -1,0 +1,3 @@
+Episode     1 at Frame      256> Reward:    3; NoOps:        2/     256  Average Score:   1.50; Max Score:    3 
+Episode     1 at Frame      234> Reward:    2; NoOps:        0/     234  Average Score:   1.00; Max Score:    2 
+Episode     1 at Frame      124> Reward:    0; NoOps:        0/     124  Average Score:   0.00; Max Score:    0 
