@@ -1,5 +1,5 @@
 This project uses AI Gym's Breakout-v4-deterministic environment.
-[[https://raw.githubusercontent.com/Caffae/Breakout-v4-deterministic/master/Breakout Gifs/4FramesPerformance.gif|alt=Trained 4 Thread A3C Model]]
+![](https://github.com/Caffa/Breakout-v4-deterministic/blob/master/Breakout%20Gifs/4FramesPerformance.gif)
 
 
 We trained 2 main models:
@@ -16,7 +16,7 @@ Can be found in  Folder
 ### Training
 The "Results/Important Results/Run with 4 Threads - Best Model" folder contains the results for training the 4 Threads A3C Model with the parameters as shown below
 
-![4 Thread A3C Model Parameter](https://raw.githubusercontent.com/Caffae/Breakout-v4-deterministic/master/Parameters/4 Thread Model.png)
+![4 Thread A3C Model Parameters](https://github.com/Caffa/Breakout-v4-deterministic/blob/master/Parameters/4%20Thread%20Model.png)
 
 ### Testing
 The "Results/Important Results/Deployment (Evaluate All Trained Weights)" contains the code and results for testing the 16 Threads A3C Model to find which trained weights were the best.
@@ -27,7 +27,7 @@ We then ran the top 7 best trained weights for a 100 episodes each. The code and
 ### Training
 The "Results/Important Results/Run with 16 Threads" folder contains the results for training the 16 Threads A3C Model with the parameters as shown below
 
-![16 Thread A3C Model Parameter](https://raw.githubusercontent.com/Caffae/Breakout-v4-deterministic/master/Parameters/16 threads.png)
+![16 Thread A3C Model Parameter](https://github.com/Caffa/Breakout-v4-deterministic/blob/master/Parameters/16%20threads.png)
 
 ### Testing
 The "Results/Important Results/Deployment" contains the code and results for testing the 16 Threads A3C Model to find which trained weights were the best.
