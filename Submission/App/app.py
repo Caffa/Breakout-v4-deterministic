@@ -156,6 +156,7 @@ def Learning(MemoryQueue, weight_dict):
     batch_size = arguments["BatchSize"]
     checkpoint = arguments["UseSavedCheckpoint"]
     steps = arguments["LRDecayRate"]
+    processes = arguments["NumberProcesses"]
 
 
     env = gym.make('BreakoutDeterministic-v4')
@@ -166,7 +167,7 @@ def Learning(MemoryQueue, weight_dict):
     if checkpoint > 0:
         maindir = str(Path().absolute())
         global FourThreadModelCheckpoint
-        pathForSavedWeights = os.path.join(maindir, "trained_weights", 'model-BreakoutDeterministic-v4-%d.h5' % (checkpoint,))
+        pathForSavedWeights = os.path.join(maindir, "trained_weights", '%dThreads-%d.h5' % (processes, checkpoint,))
         if arguments["UseSavedCheckpoint"] == FourThreadModelCheckpoint:
             pathForSavedWeights = os.path.join(str(Path().absolute()), "trained_weights", 'model-4threads.h5')
         print(' %5d> Loading weights from file %s' % (pid, pathForSavedWeights))
@@ -282,7 +283,6 @@ class ActorCritic(object):
     def transform_screen(self, data):
         return rgb2gray(resize(data, self.screen))[None, ...]
 
-
 class TestingActor(object):
     global arguments
     def __init__(self, action_space, screen=(84, 84)):
@@ -293,40 +293,362 @@ class TestingActor(object):
 
         _, self.policy_net, self.load_net, adv = build_network(self.observation_shape, action_space.n)
 
-        # self.value_net.compile(optimizer='rmsprop', loss='mse')
-        # self.policy_net.compile(optimizer='rmsprop', loss='categorical_crossentropy')
         self.load_net.compile(optimizer=RMSprop(clipnorm=1.), loss='mse')  # clipnorm=1.
-        # self.load_net.compile(optimizer='rmsprop', loss='mse', loss_weights=[0.5, 1.])  # dummy loss
+
 
         self.action_space = action_space
         self.observations = np.zeros((self.input_depth * self.past_range,) + screen)
-        # self.observations = np.zeros(self.observation_shape)
-        # self.last_observations = np.zeros_like(self.observations)
-        #
-        #
-        # self.n_step_observations = deque(maxlen=n_step)
-        # self.n_step_actions = deque(maxlen=n_step)
-        # self.n_step_rewards = deque(maxlen=n_step)
-        # self.n_step = n_step
-        # self.discount = discount
-        # self.counter = 0
 
     def init_episode(self, observation):
+        # print("Init Eps")
         for _ in range(self.past_range):
             self.save_observation(observation)
 
     def getAction(self, observation):
         self.save_observation(observation)
         policy = self.policy_net.predict(self.observations[None, ...])[0]
-        policy /= np.sum(policy)  # numpy, why?
+        policy /= np.sum(policy)
         return np.random.choice(np.arange(self.action_space.n), p=policy)
 
     def save_observation(self, observation):
+        # print("save observation")
         self.observations = np.roll(self.observations, -self.input_depth, axis=0)
         self.observations[-self.input_depth:, ...] = self.transform_screen(observation)
 
     def transform_screen(self, data):
-        return rgb2gray(resize(data, self.screen))[None, ...]
+        img = resize(data, self.screen)
+        gray = rgb2gray(img)[None, ...]
+        # print(img)
+        return gray
+
+def writeOneLinerBug(name):
+    f=open(os.path.join(rootdir, "Bug_Thread.txt"), "a+")
+    f.write(name + " doesn't act")
+    f.close()
+
+
+def writeOneLiner(msg, name):
+    f=open(os.path.join(rootdir, str(name) +"Thread_ContinuousReporting.txt"), "a+")
+    f.write(msg)
+    f.close()
+
+def writeOneLinerAverageRewards(rewardList, name):
+    f=open(os.path.join(rootdir, "Average Rewards.txt"), "a+")
+    msg = str(name) + " has average rewards over 100 episodes: " + str(statistics.mean(rewardList)) + "\n"
+    f.write(msg)
+    f.close()
+
+flattenList = lambda l: [item for sublist in l for item in sublist]
+
+
+def appendCSV(name, rewards_list, csvPath):
+    # print(rewards_list)
+    if os.path.isfile(csvPath):
+        print("CSV File Exists - Append")
+        data = pd.read_csv(csvPath, index_col=0)
+        # print(data.head())
+        # print("read val")
+        readVals = data.values.tolist()
+        # print(readVals)
+        if any(isinstance(i, list) for i in readVals):
+            oldRewards = flattenList(readVals)
+        else:
+            oldRewards = readVals
+        # print("OLD REWARDS#########################")
+        # print(oldRewards)
+        fullRewardList = oldRewards + rewards_list
+    else:
+        fullRewardList = rewards_list
+    print("Saving CSV")
+
+
+    df_new = pd.DataFrame(fullRewardList)
+    df_new.to_csv(csvPath)
+
+    return fullRewardList
+
+
+def saveCSV(name, rewards_list):
+    print("Printing CSV")
+    df = pd.DataFrame(rewards_list)
+    csvPath = os.path.join(rootdir, str(name) + "Rewards.csv")
+    df.to_csv(csvPath)
+
+
+
+def renderRewardGraphFromDF(name, rewardList):
+    # rewardList = rewardListDF.values.tolist()[0]
+
+    print("Plotting Reward Curve for Episode: " + str(len(rewardList)))
+    plt.figure(2)
+    plt.clf()
+    plt.xlabel('episode')
+    plt.ylabel('reward')
+    plt.plot(list(range(0, len(rewardList))), rewardList)
+
+    print("Saving Figure")
+
+    # if episode_count > 49:
+    #     imgPath = os.path.join(rootdir, "RewardsGraph_Episode" + str(len(rewardList)) + "_Thread " + str(name) +".PNG")
+    #     plt.savefig(imgPath)
+
+    GeneralPath = os.path.join(rootdir, "Rewards Weights:" + str(name) +".PNG")
+
+    plt.savefig(GeneralPath)
+
+    # print("\nCalculate Average Reward")
+    # if len(rewardList) > 100:
+    #     rwdsList= rewardList[-100:]
+    #     averageLast100Eps = statistics.mean(rwdsList)
+    #     msg = str(episode_count) + " Episodes_" + str(frames) + " Frames: Average reward over last 100 Episodes: " + str(averageLast100Eps) +"\n"
+    # else:
+    #     rwdsList = rewardList
+    #     averageLast100Eps = statistics.mean(rwdsList)
+    #     msg = str(episode_count) + " Episodes_" + str(frames) + " Frames: Average reward over all Episodes: " + str(averageLast100Eps) +"\n"
+    # # print(msg)
+    # print("Write to file")
+    # f=open(os.path.join(rootdir, "Thread_averageRewards.txt"), "a+")
+    # f.write(msg)
+    # f.close()
+
+    return
+
+
+def renderRewardGraph(name, rewardList):
+    print("Plotting Reward Curve for Episode: " + str(len(rewardList)))
+    plt.figure(2)
+    plt.clf()
+    plt.xlabel('episode')
+    plt.ylabel('reward')
+    plt.plot(list(range(0, len(rewardList))), rewardList)
+
+    print("Saving Figure")
+
+    imgPath = os.path.join(rootdir, "RewardsGraph_Episode" + str(len(rewardList)) + "_Thread " + str(name) +".PNG")
+    plt.savefig(imgPath)
+
+    print("Calculate Average Reward")
+    if len(rewardList) >= 5:
+        rwdsList= rewardList[-5:]
+        msg = "\nAverage reward over last 5 Episodes: "
+    else:
+        rwdsList = rewardList
+        msg = "\nAverage reward over all Episodes: "
+
+    averageLast100Eps = statistics.mean(rwdsList)
+    print("Write to file")
+    f=open(os.path.join(rootdir, str(name) +"Thread_averageRewards.txt"), "a+")
+    f.write(msg + str(averageLast100Eps))
+    f.close()
+
+    return
+
+
+def init_worker():
+
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+
+
+def main(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, BatchSize = 64, SwapRate = 100, SavePolicyEvery = 100000, UseSavedCheckpoint = 10000000, ExperienceQueueSize = 64, N_steps = 10, beta = 0.01, autoFire = True, RenderEvery = 50, LookBackFrames = 8):
+    # framesToTest = int(framesToTestInput.value)
+    # global FourThreadModelCheckpoint
+    global arguments
+    arguments = {}
+    arguments["NumberProcesses"] = NumberProcesses
+    arguments["LearningRate"] = LearningRate
+    arguments["LRDecayRate"] = LRDecayRate
+    arguments["BatchSize"] = BatchSize
+    arguments["SwapRate"] = SwapRate
+    arguments["SavePolicyEvery"] = SavePolicyEvery
+    # arguments["UseSavedCheckpoint"] = UseSavedCheckpoint
+    # arguments["UseSavedCheckpoint"] = FourThreadModelCheckpoint
+    arguments["ExperienceQueueSize"] = ExperienceQueueSize
+    arguments["N-Steps"] = N_steps
+    arguments["beta"] = beta
+    arguments["AutoFire"] = autoFire
+    if RenderEvery > 0:
+        arguments["RenderEvery"] = RenderEvery
+    else:
+        arguments["RenderEvery"] = 50
+    arguments["LookBackFramesNumber"] = LookBackFrames
+    global rootdir
+    rootdir = os.path.join(str(Path().absolute()), "Results", "EvaluationDir")
+
+    makeMyDir(rootdir)
+    global env
+    env = gym.make('BreakoutDeterministic-v4')
+
+
+def testCheckGrey(data, type, msg):
+    img = Image.fromarray(data, type)
+    img.show()
+    img.save(msg + ".JPEG")
+
+
+
+def testCheck(data):
+    img = Image.fromarray(data, 'RGB').convert('L')
+    img.save("TestCheck.PNG")
+    img.show()
+
+def testMatCheck(data):
+    plt.imshow(data, interpolation='nearest')
+    plt.show()
+    plt.savefig("TestMatCheck.PNG")
+
+def convertGrey(data):
+    img = Image.fromarray(data, 'RGB')
+    # img.save("Loaded.PNG")
+    img = img.convert('L')
+    # img.save("Convert Grey.PNG")
+    # img = img.convert('1')
+    # img.save("Convert BW.PNG")
+    data = np.array(img)
+
+    return data
+
+
+def preprocess(img):
+    #downsample
+    img = img[::2, ::2]
+    # print(img.shape)
+
+    if greyScale:
+        img = convertGrey(img)
+        img = FloatTensor(img).unsqueeze(2)
+    else:
+        img = FloatTensor(img)
+
+    # print(img.shape)
+    return img
+    # env.close()
+
+def saveThisImg(observation, imgPath):
+    img = Image.fromarray(observation,'RGB')
+    img.save(imgPath)
+
+
+def testPlay(WeightsName):
+    print("Test Playing begins")
+    global rootdir
+    global env
+    global arguments
+    global framesToPlay
+
+    agent = TestingActor(env.action_space)
+    # model_file = arguments["UseSavedCheckpoint"]
+    print("Loading Weights")
+    agent.load_net.load_weights(os.path.join(str(Path().absolute()), "trained_weights", WeightsName))
+    print("Finish Loading Weights")
+    # agent.load_net.load_weights(WeightsName)
+    game = 1
+
+    frames = 0
+    global DoRender
+    for _ in range(framesToPlay):
+        actionList = []
+        numberTimeRun = 0
+        all_rewards =[]
+        done = False
+        episode_reward = 0
+        noops = 0
+        Acting = True
+        # init game
+        observation = env.reset()
+        # testCheckGrey(observation, "RGB", "RGB")
+        # testCheckGrey(agent.transform_screen(observation), "RGB", "RGB")
+        # testCheckGrey(observation, "HSV", "HSV")
+        # print("First Observation")
+        agent.init_episode(observation)
+        # play one game
+        print('Game #%8d; ' % (game,), end='')
+        while not done:
+            frames += 1
+            if DoRender:
+                env.render()
+            action = agent.getAction(observation)
+            if arguments["AutoFire"] and numberTimeRun == 0:
+                numberTimeRun += 1
+                print("Auto-fire first shot")
+                #auto fire for first shot
+                action = 1
+                if Acting:
+                    #if twice in a row didn't do anything, quit
+                    msg = WeightsName + " is bad - doesn't fire for ep twice in a row"
+                    # print(msg)
+                    writeOneLinerBug(msg)
+                    done = True
+
+                Acting = False
+            elif frames % 50 == 0:
+                print("Do action " + str(env.unwrapped.get_action_meanings()[action]))
+                Acting = True
+
+                if len(actionList) > 100:
+                    if len(set(actionList))==1:
+                        #all the actions are the same
+                        msg = WeightsName + " is bad - always the same action: " + str(env.unwrapped.get_action_meanings()[action])
+                        print(msg)
+                        writeOneLinerBug(msg)
+                        done = True
+                        # framesToPlay = 1
+                        break;
+            else:
+                actionList.append(action)
+
+
+            observation, reward, done, _ = env.step(action)
+            episode_reward += reward
+
+            # ----
+            if action == 0:
+                noops += 1
+            else:
+                noops = 0
+            if noops > 100:
+                break
+
+
+        print('Reward %5d; ' % (episode_reward,))
+        all_rewards.append(episode_reward)
+        msg = str(WeightsName) +' Episode %5d has Reward: %4d with Frames %5d; \n' % (game, episode_reward, frames)
+        writeOneLiner(msg, WeightsName)
+        csvPath = os.path.join(rootdir, WeightsName +"_Rewards.csv")
+        imgPath = os.path.join(rootdir, WeightsName + "_Episode" + str(game) +"_End.png")
+        saveThisImg(observation, imgPath)
+        # all_rewards = [] #flush rubbish
+        if game >= framesToPlay:
+            print("Plot Reward Curve")
+
+            saveCSV(WeightsName, all_rewards)
+            # rewardList = appendCSV(1, all_rewards, csvPath)
+            renderRewardGraphFromDF(WeightsName, all_rewards)
+            writeOneLinerAverageRewards(all_rewards, WeightsName)
+
+        game += 1
+
+
+
+def runForAllWeights(threads):
+    global DoRender
+    DoRender = False
+    global framesToPlay
+    framesToPlay = 100
+
+    mypath = os.path.join(str(Path().absolute()), "trained_weights")
+    set_test_params(NumberProcesses = threads) #set params
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.endswith(".h5")]
+    # print(onlyfiles)
+    onlyfiles.sort()
+    print(onlyfiles)
+    for WeightsName in onlyfiles:
+        # if WeightsName.endswith(".h5"):
+        if WeightsName.beginswith(str(threads)):
+            print("######################## Playing ####################################")
+            # print(WeightsName[WeightsName.find("v4-")+3:])
+            print(WeightsName)
+            testPlay(WeightsName)
 
 
 def Training(MemoryQueue, weight_dict, no):
@@ -574,7 +896,7 @@ def init_worker():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
-def main(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, BatchSize = 64, SwapRate = 100, SavePolicyEvery = 100000, UseSavedCheckpoint = 0, ExperienceQueueSize = 64, N_steps = 10, beta = 0.01, autoFire = True, RenderEvery = 50, LookBackFrames = 8):
+def set_test_params(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, BatchSize = 64, SwapRate = 100, SavePolicyEvery = 100000, UseSavedCheckpoint = 0, ExperienceQueueSize = 64, N_steps = 10, beta = 0.01, autoFire = True, RenderEvery = 50, LookBackFrames = 8):
 
     global arguments
     arguments = {}
@@ -589,14 +911,19 @@ def main(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, Batc
     else:
         arguments["UseSavedCheckpoint"] = 0
     arguments["ExperienceQueueSize"] = ExperienceQueueSize
-    arguments["N-Steps"] = N_steps
+
     arguments["beta"] = beta
     arguments["AutoFire"] = autoFire
     if RenderEvery > 0:
         arguments["RenderEvery"] = RenderEvery
     else:
         arguments["RenderEvery"] = 50
-    arguments["LookBackFramesNumber"] = LookBackFrames
+    if NumberProcesses == 4:
+        arguments["LookBackFramesNumber"] = 8
+        arguments["N-Steps"] = 5
+    elif NumberProcesses == 16:
+        arguments["LookBackFramesNumber"] = 3
+        arguments["N-Steps"] = 10
 
 
     global rootdir
@@ -629,76 +956,80 @@ def main(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, Batc
 
 
 ###HERE UPDATE 4 Thread Model
-def play(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, BatchSize = 64, SwapRate = 100, SavePolicyEvery = 100000, UseSavedCheckpoint = 10000000, ExperienceQueueSize = 64, N_steps = 10, beta = 0.01, autoFire = True, RenderEvery = 50, LookBackFrames = 8):
-    # framesToTest = int(framesToTestInput.value)
-    global FourThreadModelCheckpoint
-    global arguments
-    arguments = {}
-    arguments["NumberProcesses"] = NumberProcesses
-    arguments["LearningRate"] = LearningRate
-    arguments["LRDecayRate"] = LRDecayRate
-    arguments["BatchSize"] = BatchSize
-    arguments["SwapRate"] = SwapRate
-    arguments["SavePolicyEvery"] = SavePolicyEvery
-    # arguments["UseSavedCheckpoint"] = UseSavedCheckpoint
-    arguments["UseSavedCheckpoint"] = FourThreadModelCheckpoint
-    arguments["ExperienceQueueSize"] = ExperienceQueueSize
-    arguments["N-Steps"] = N_steps
-    arguments["beta"] = beta
-    arguments["AutoFire"] = autoFire
-    if RenderEvery > 0:
-        arguments["RenderEvery"] = RenderEvery
-    else:
-        arguments["RenderEvery"] = 50
-    arguments["LookBackFramesNumber"] = LookBackFrames
-    global rootdir
-    rootdir = os.path.join(str(Path().absolute()), "Results", "EvaluationDir")
-    makeMyDir(rootdir)
-    env = gym.make('BreakoutDeterministic-v4')
-    agent = TestingActor(env.action_space)
-    # model_file = arguments["UseSavedCheckpoint"]
-    agent.load_net.load_weights(os.path.join(str(Path().absolute()), "trained_weights", 'model-4threads.h5'))
-    game = 1
-    framesToPlay = int(framesToTestInput.value)
-    frames = 0
-    for _ in range(framesToPlay):
-        all_rewards =[]
-        done = False
-        episode_reward = 0
-        noops = 0
-        # init game
-        observation = env.reset()
-        agent.init_episode(observation)
-        # play one game
-        print('Game #%8d; ' % (game,), end='')
-        while not done:
-            frames += 1
-            env.render()
-            action = agent.getAction(observation)
-            observation, reward, done, _ = env.step(action)
-            episode_reward += reward
-            # ----
-            if action == 0:
-                noops += 1
-            else:
-                noops = 0
-            if noops > 100:
-                break
+# def play(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, BatchSize = 64, SwapRate = 100, SavePolicyEvery = 100000, UseSavedCheckpoint = 10000000, ExperienceQueueSize = 64, N_steps = 10, beta = 0.01, autoFire = True, RenderEvery = 50, LookBackFrames = 8):
+#     # framesToTest = int(framesToTestInput.value)
+#     global FourThreadModelCheckpoint
+#     global arguments
+#     arguments = {}
+#     arguments["NumberProcesses"] = NumberProcesses
+#     arguments["LearningRate"] = LearningRate
+#     arguments["LRDecayRate"] = LRDecayRate
+#     arguments["BatchSize"] = BatchSize
+#     arguments["SwapRate"] = SwapRate
+#     arguments["SavePolicyEvery"] = SavePolicyEvery
+#     # arguments["UseSavedCheckpoint"] = UseSavedCheckpoint
+#     arguments["UseSavedCheckpoint"] = FourThreadModelCheckpoint
+#     arguments["ExperienceQueueSize"] = ExperienceQueueSize
+#     arguments["N-Steps"] = N_steps
+#     arguments["beta"] = beta
+#     arguments["AutoFire"] = autoFire
+#     if RenderEvery > 0:
+#         arguments["RenderEvery"] = RenderEvery
+#     else:
+#         arguments["RenderEvery"] = 50
+#     arguments["LookBackFramesNumber"] = LookBackFrames
+#     global rootdir
+#     rootdir = os.path.join(str(Path().absolute()), "Results", "EvaluationDir")
+#     makeMyDir(rootdir)
+#     env = gym.make('BreakoutDeterministic-v4')
+#     agent = TestingActor(env.action_space)
+#     # model_file = arguments["UseSavedCheckpoint"]
+#     agent.load_net.load_weights(os.path.join(str(Path().absolute()), "trained_weights", 'model-4threads.h5'))
+#     game = 1
+#     framesToPlay = int(framesToTestInput.value)
+#     frames = 0
+#     for _ in range(framesToPlay):
+#         all_rewards =[]
+#         done = False
+#         episode_reward = 0
+#         noops = 0
+#         # init game
+#         observation = env.reset()
+#         agent.init_episode(observation)
+#         # play one game
+#         print('Game #%8d; ' % (game,), end='')
+#         while not done:
+#             frames += 1
+#             env.render()
+#             action = agent.getAction(observation)
+#             observation, reward, done, _ = env.step(action)
+#             episode_reward += reward
+#             # ----
+#             if action == 0:
+#                 noops += 1
+#             else:
+#                 noops = 0
+#             if noops > 100:
+#                 break
+#
+#         print('Reward %5d; ' % (episode_reward,))
+#         all_rewards.append(episode_reward)
+#         msg = 'Episode %5d has Reward: %4d; \n' % (game, episode_reward,)
+#         writeOneLiner(msg, 1)
+#         csvPath = os.path.join(rootdir, "Rewards.csv")
+#         rewardList = appendCSV(1, all_rewards, csvPath)
+#         all_rewards = [] #flush rubbish
+#         if game >= framesToPlay:
+#             print("Plot Reward Curve")
+#             renderRewardGraphFromDF(1, rewardList, frames, game)
+#
+#         game += 1
+#
+def testShow4Threads():
+    runForAllWeights(4)
 
-        print('Reward %5d; ' % (episode_reward,))
-        all_rewards.append(episode_reward)
-        msg = 'Episode %5d has Reward: %4d; \n' % (game, episode_reward,)
-        writeOneLiner(msg, 1)
-        csvPath = os.path.join(rootdir, "Rewards.csv")
-        rewardList = appendCSV(1, all_rewards, csvPath)
-        all_rewards = [] #flush rubbish
-        if game >= framesToPlay:
-            print("Plot Reward Curve")
-            renderRewardGraphFromDF(1, rewardList, frames, game)
-
-        game += 1
-
-
+def testShow4Threads():
+    runForAllWeights(16)
 
 def trainAppliedParams():
 
