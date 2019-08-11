@@ -1,4 +1,5 @@
 This project uses AI Gym's Breakout-v4-deterministic environment.
+
 ![](https://github.com/Caffa/Breakout-v4-deterministic/blob/master/Breakout%20Gifs/4FramesPerformance.gif)
 
 
