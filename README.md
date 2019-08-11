@@ -1,5 +1,6 @@
 This project uses AI Gym's Breakout-v4-deterministic environment.
-![Trained 4 Thread A3C Model](https://raw.githubusercontent.com/Caffae/Breakout-v4-deterministic/master/Breakout Gifs/4FramesPerformance.gif)
+[[https://raw.githubusercontent.com/Caffae/Breakout-v4-deterministic/master/Breakout Gifs/4FramesPerformance.gif|alt=Trained 4 Thread A3C Model]]
+
 
 We trained 2 main models:
 - 16 thread model: looks at past 3 frames and considers 5 N-steps. Batch Size used is 20, Experience Queue size is 256.
