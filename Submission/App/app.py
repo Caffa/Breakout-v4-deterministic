@@ -585,12 +585,10 @@ def testPlay(WeightsName):
                     # print(msg)
                     writeOneLinerBug(msg)
                     done = True
-
                 Acting = False
             elif frames % 50 == 0:
                 print("Do action " + str(env.unwrapped.get_action_meanings()[action]))
                 Acting = True
-
                 if len(actionList) > 100:
                     if len(set(actionList))==1:
                         #all the actions are the same
@@ -602,8 +600,6 @@ def testPlay(WeightsName):
                         break;
             else:
                 actionList.append(action)
-
-
             observation, reward, done, _ = env.step(action)
             episode_reward += reward
 
@@ -629,7 +625,7 @@ def testPlay(WeightsName):
 
             saveCSV(WeightsName, all_rewards)
             # rewardList = appendCSV(1, all_rewards, csvPath)
-            renderRewardGraphFromDF(WeightsName, all_rewards)
+            # renderRewardGraphFromDF(WeightsName, all_rewards)
             writeOneLinerAverageRewards(all_rewards, WeightsName)
 
         game += 1

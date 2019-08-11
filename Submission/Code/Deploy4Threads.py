@@ -463,7 +463,7 @@ def main(NumberProcesses = 4, LearningRate = 0.001, LRDecayRate = 80000000, Batc
     env = gym.make('BreakoutDeterministic-v4')
     agent = TestingActor(env.action_space)
     # model_file = arguments["UseSavedCheckpoint"]
-    agent.load_net.load_weights(os.path.join(str(Path().absolute()), "trained_weights", 'model-4threads.h5'))
+    agent.load_net.load_weights(os.path.join(str(Path().absolute()), "trained_weights", '4Threads-10299968.h5'))
     game = 1
     framesToPlay = 20
     frames = 0

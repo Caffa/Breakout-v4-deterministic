@@ -1,0 +1,195 @@
+1 Episodes_174 Frames: Average reward over all Episodes: 1.0
+2 Episodes_332 Frames: Average reward over all Episodes: 1.0
+3 Episodes_502 Frames: Average reward over all Episodes: 1.0
+4 Episodes_684 Frames: Average reward over all Episodes: 1.0
+5 Episodes_930 Frames: Average reward over all Episodes: 1.4
+6 Episodes_1064 Frames: Average reward over all Episodes: 1.1666666666666667
+7 Episodes_1209 Frames: Average reward over all Episodes: 1.0
+8 Episodes_1340 Frames: Average reward over all Episodes: 0.875
+9 Episodes_1543 Frames: Average reward over all Episodes: 1.0
+10 Episodes_1730 Frames: Average reward over all Episodes: 1.0
+11 Episodes_1936 Frames: Average reward over all Episodes: 1.0909090909090908
+12 Episodes_2063 Frames: Average reward over all Episodes: 1.0
+13 Episodes_2195 Frames: Average reward over all Episodes: 0.9230769230769231
+14 Episodes_2371 Frames: Average reward over all Episodes: 0.9285714285714286
+15 Episodes_2509 Frames: Average reward over all Episodes: 0.8666666666666667
+16 Episodes_2666 Frames: Average reward over all Episodes: 0.875
+17 Episodes_2803 Frames: Average reward over all Episodes: 0.8235294117647058
+18 Episodes_3083 Frames: Average reward over all Episodes: 1.0
+19 Episodes_3277 Frames: Average reward over all Episodes: 1.0526315789473684
+20 Episodes_3436 Frames: Average reward over all Episodes: 1.05
+21 Episodes_3570 Frames: Average reward over all Episodes: 1.0
+22 Episodes_3730 Frames: Average reward over all Episodes: 0.9545454545454546
+23 Episodes_3909 Frames: Average reward over all Episodes: 0.9565217391304348
+24 Episodes_4270 Frames: Average reward over all Episodes: 1.125
+25 Episodes_4441 Frames: Average reward over all Episodes: 1.12
+26 Episodes_4643 Frames: Average reward over all Episodes: 1.1538461538461537
+27 Episodes_4816 Frames: Average reward over all Episodes: 1.1481481481481481
+28 Episodes_5015 Frames: Average reward over all Episodes: 1.1785714285714286
+29 Episodes_5155 Frames: Average reward over all Episodes: 1.1379310344827587
+30 Episodes_5353 Frames: Average reward over all Episodes: 1.1666666666666667
+31 Episodes_5503 Frames: Average reward over all Episodes: 1.1290322580645162
+32 Episodes_5676 Frames: Average reward over all Episodes: 1.125
+33 Episodes_5948 Frames: Average reward over all Episodes: 1.2121212121212122
+34 Episodes_6081 Frames: Average reward over all Episodes: 1.1764705882352942
+35 Episodes_6292 Frames: Average reward over all Episodes: 1.2
+36 Episodes_6470 Frames: Average reward over all Episodes: 1.1944444444444444
+37 Episodes_6652 Frames: Average reward over all Episodes: 1.1891891891891893
+38 Episodes_6887 Frames: Average reward over all Episodes: 1.236842105263158
+39 Episodes_7095 Frames: Average reward over all Episodes: 1.2564102564102564
+40 Episodes_7304 Frames: Average reward over all Episodes: 1.275
+41 Episodes_7433 Frames: Average reward over all Episodes: 1.2439024390243902
+42 Episodes_7555 Frames: Average reward over all Episodes: 1.2142857142857142
+43 Episodes_7763 Frames: Average reward over all Episodes: 1.2325581395348837
+44 Episodes_7889 Frames: Average reward over all Episodes: 1.2045454545454546
+45 Episodes_8074 Frames: Average reward over all Episodes: 1.2
+46 Episodes_8234 Frames: Average reward over all Episodes: 1.1956521739130435
+47 Episodes_8400 Frames: Average reward over all Episodes: 1.1914893617021276
+48 Episodes_8555 Frames: Average reward over all Episodes: 1.1875
+49 Episodes_8721 Frames: Average reward over all Episodes: 1.183673469387755
+50 Episodes_8897 Frames: Average reward over all Episodes: 1.18
+100 Episodes_17832 Frames: Average reward over all Episodes: 1.16
+150 Episodes_27165 Frames: Average reward over last 100 Episodes: 1.3
+200 Episodes_36443 Frames: Average reward over last 100 Episodes: 1.49
+250 Episodes_47695 Frames: Average reward over last 100 Episodes: 2.75
+300 Episodes_60720 Frames: Average reward over last 100 Episodes: 5.02
+350 Episodes_73126 Frames: Average reward over last 100 Episodes: 5.79
+400 Episodes_85517 Frames: Average reward over last 100 Episodes: 5.28
+450 Episodes_98139 Frames: Average reward over last 100 Episodes: 5.32
+500 Episodes_110814 Frames: Average reward over last 100 Episodes: 5.46
+550 Episodes_123303 Frames: Average reward over last 100 Episodes: 5.56
+600 Episodes_136515 Frames: Average reward over last 100 Episodes: 5.75
+650 Episodes_149390 Frames: Average reward over last 100 Episodes: 5.82
+700 Episodes_162511 Frames: Average reward over last 100 Episodes: 6.29
+750 Episodes_174827 Frames: Average reward over last 100 Episodes: 5.95
+800 Episodes_188436 Frames: Average reward over last 100 Episodes: 6.26
+850 Episodes_201561 Frames: Average reward over last 100 Episodes: 6.86
+900 Episodes_214619 Frames: Average reward over last 100 Episodes: 5.95
+950 Episodes_227268 Frames: Average reward over last 100 Episodes: 5.85
+1000 Episodes_240657 Frames: Average reward over last 100 Episodes: 6.18
+1050 Episodes_254011 Frames: Average reward over last 100 Episodes: 6.5
+1100 Episodes_267363 Frames: Average reward over last 100 Episodes: 7.03
+1150 Episodes_281171 Frames: Average reward over last 100 Episodes: 7.21
+1200 Episodes_294673 Frames: Average reward over last 100 Episodes: 7.32
+1250 Episodes_308308 Frames: Average reward over last 100 Episodes: 7.38
+1300 Episodes_321847 Frames: Average reward over last 100 Episodes: 7.58
+1350 Episodes_336359 Frames: Average reward over last 100 Episodes: 8.24
+1400 Episodes_350473 Frames: Average reward over last 100 Episodes: 8.64
+1450 Episodes_365195 Frames: Average reward over last 100 Episodes: 8.87
+1500 Episodes_379701 Frames: Average reward over last 100 Episodes: 8.94
+1550 Episodes_394091 Frames: Average reward over last 100 Episodes: 8.7
+1600 Episodes_408235 Frames: Average reward over last 100 Episodes: 8.87
+1650 Episodes_422483 Frames: Average reward over last 100 Episodes: 9.03
+1700 Episodes_437332 Frames: Average reward over last 100 Episodes: 9.01
+1750 Episodes_452362 Frames: Average reward over last 100 Episodes: 8.9
+1800 Episodes_468117 Frames: Average reward over last 100 Episodes: 9.08
+1850 Episodes_483727 Frames: Average reward over last 100 Episodes: 9.1
+1900 Episodes_499978 Frames: Average reward over last 100 Episodes: 9.55
+1950 Episodes_515364 Frames: Average reward over last 100 Episodes: 9.49
+2000 Episodes_532378 Frames: Average reward over last 100 Episodes: 8.92
+2050 Episodes_550571 Frames: Average reward over last 100 Episodes: 9.88
+2100 Episodes_569346 Frames: Average reward over last 100 Episodes: 11.08
+2150 Episodes_589164 Frames: Average reward over last 100 Episodes: 11.42
+2200 Episodes_609555 Frames: Average reward over last 100 Episodes: 11.6
+2250 Episodes_624895 Frames: Average reward over last 100 Episodes: 9.99
+2300 Episodes_629945 Frames: Average reward over last 100 Episodes: 4.04
+2350 Episodes_634995 Frames: Average reward over last 100 Episodes: 0.0
+2400 Episodes_640045 Frames: Average reward over last 100 Episodes: 0.0
+2450 Episodes_648656 Frames: Average reward over last 100 Episodes: 1.03
+2500 Episodes_668308 Frames: Average reward over last 100 Episodes: 6.69
+2550 Episodes_689809 Frames: Average reward over last 100 Episodes: 12.02
+2600 Episodes_713549 Frames: Average reward over last 100 Episodes: 14.34
+2650 Episodes_738454 Frames: Average reward over last 100 Episodes: 16.62
+2700 Episodes_765855 Frames: Average reward over last 100 Episodes: 18.43
+2750 Episodes_792885 Frames: Average reward over last 100 Episodes: 18.95
+2800 Episodes_818189 Frames: Average reward over last 100 Episodes: 18.07
+2850 Episodes_845212 Frames: Average reward over last 100 Episodes: 18.89
+2900 Episodes_873911 Frames: Average reward over last 100 Episodes: 20.28
+2950 Episodes_901064 Frames: Average reward over last 100 Episodes: 20.42
+3000 Episodes_916207 Frames: Average reward over last 100 Episodes: 14.43
+3050 Episodes_945033 Frames: Average reward over last 100 Episodes: 15.14
+3100 Episodes_976069 Frames: Average reward over last 100 Episodes: 22.4
+3150 Episodes_1006238 Frames: Average reward over last 100 Episodes: 23.53
+3200 Episodes_1036671 Frames: Average reward over last 100 Episodes: 23.72
+3250 Episodes_1067666 Frames: Average reward over last 100 Episodes: 24.82
+3300 Episodes_1099085 Frames: Average reward over last 100 Episodes: 26.03
+3350 Episodes_1130320 Frames: Average reward over last 100 Episodes: 26.22
+3400 Episodes_1163292 Frames: Average reward over last 100 Episodes: 28.6
+3450 Episodes_1196565 Frames: Average reward over last 100 Episodes: 29.92
+3500 Episodes_1228514 Frames: Average reward over last 100 Episodes: 27.74
+3550 Episodes_1233564 Frames: Average reward over last 100 Episodes: 13.17
+3600 Episodes_1238614 Frames: Average reward over last 100 Episodes: 0.0
+3650 Episodes_1243664 Frames: Average reward over last 100 Episodes: 0.0
+3700 Episodes_1248714 Frames: Average reward over last 100 Episodes: 0.0
+3750 Episodes_1274651 Frames: Average reward over last 100 Episodes: 11.12
+3800 Episodes_1311263 Frames: Average reward over last 100 Episodes: 27.48
+3850 Episodes_1348832 Frames: Average reward over last 100 Episodes: 36.78
+3900 Episodes_1386336 Frames: Average reward over last 100 Episodes: 40.53
+3950 Episodes_1424041 Frames: Average reward over last 100 Episodes: 40.28
+4000 Episodes_1463166 Frames: Average reward over last 100 Episodes: 42.38
+4050 Episodes_1502487 Frames: Average reward over last 100 Episodes: 44.02
+4100 Episodes_1540178 Frames: Average reward over last 100 Episodes: 44.67
+4150 Episodes_1581040 Frames: Average reward over last 100 Episodes: 47.09
+4200 Episodes_1623358 Frames: Average reward over last 100 Episodes: 54.1
+4250 Episodes_1663235 Frames: Average reward over last 100 Episodes: 56.26
+4300 Episodes_1683727 Frames: Average reward over last 100 Episodes: 35.86
+4350 Episodes_1722470 Frames: Average reward over last 100 Episodes: 40.3
+4400 Episodes_1764899 Frames: Average reward over last 100 Episodes: 56.12
+4450 Episodes_1808295 Frames: Average reward over last 100 Episodes: 59.34
+4500 Episodes_1852322 Frames: Average reward over last 100 Episodes: 68.39
+4550 Episodes_1899598 Frames: Average reward over last 100 Episodes: 66.09
+4600 Episodes_1946307 Frames: Average reward over last 100 Episodes: 75.85
+4650 Episodes_1994277 Frames: Average reward over last 100 Episodes: 87.4
+4700 Episodes_2038335 Frames: Average reward over last 100 Episodes: 81.54
+4750 Episodes_2084889 Frames: Average reward over last 100 Episodes: 76.13
+4800 Episodes_2129877 Frames: Average reward over last 100 Episodes: 71.49
+4850 Episodes_2179724 Frames: Average reward over last 100 Episodes: 81.44
+4900 Episodes_2230147 Frames: Average reward over last 100 Episodes: 85.95
+4950 Episodes_2281563 Frames: Average reward over last 100 Episodes: 90.04
+5000 Episodes_2331637 Frames: Average reward over last 100 Episodes: 100.56
+5050 Episodes_2380930 Frames: Average reward over last 100 Episodes: 90.91
+5100 Episodes_2431632 Frames: Average reward over last 100 Episodes: 94.58
+5150 Episodes_2483176 Frames: Average reward over last 100 Episodes: 114.96
+5200 Episodes_2539201 Frames: Average reward over last 100 Episodes: 131.94
+5250 Episodes_2584547 Frames: Average reward over last 100 Episodes: 119.43
+5300 Episodes_2636169 Frames: Average reward over last 100 Episodes: 89.61
+5350 Episodes_2688753 Frames: Average reward over last 100 Episodes: 94.79
+5500 Episodes_2842354 Frames: Average reward over last 100 Episodes: 111.64
+5550 Episodes_2892445 Frames: Average reward over last 100 Episodes: 78.18
+5600 Episodes_2946617 Frames: Average reward over last 100 Episodes: 85.75
+5650 Episodes_3001837 Frames: Average reward over last 100 Episodes: 100.14
+5700 Episodes_3062879 Frames: Average reward over last 100 Episodes: 118.66
+5750 Episodes_3115105 Frames: Average reward over last 100 Episodes: 115.11
+5800 Episodes_3167757 Frames: Average reward over last 100 Episodes: 102.24
+5850 Episodes_3211235 Frames: Average reward over last 100 Episodes: 90.13
+5900 Episodes_3216285 Frames: Average reward over last 100 Episodes: 35.04
+5950 Episodes_3221335 Frames: Average reward over last 100 Episodes: 0.0
+6000 Episodes_3227019 Frames: Average reward over last 100 Episodes: 0.28
+6050 Episodes_3232069 Frames: Average reward over last 100 Episodes: 0.28
+6100 Episodes_3237119 Frames: Average reward over last 100 Episodes: 0.0
+6150 Episodes_3242169 Frames: Average reward over last 100 Episodes: 0.0
+6200 Episodes_3247219 Frames: Average reward over last 100 Episodes: 0.0
+6250 Episodes_3252269 Frames: Average reward over last 100 Episodes: 0.0
+6300 Episodes_3257319 Frames: Average reward over last 100 Episodes: 0.0
+6350 Episodes_3262369 Frames: Average reward over last 100 Episodes: 0.0
+6400 Episodes_3267419 Frames: Average reward over last 100 Episodes: 0.0
+6450 Episodes_3272469 Frames: Average reward over last 100 Episodes: 0.0
+6500 Episodes_3277519 Frames: Average reward over last 100 Episodes: 0.0
+6550 Episodes_3282569 Frames: Average reward over last 100 Episodes: 0.0
+6600 Episodes_3287619 Frames: Average reward over last 100 Episodes: 0.0
+6650 Episodes_3292669 Frames: Average reward over last 100 Episodes: 0.0
+6700 Episodes_3297719 Frames: Average reward over last 100 Episodes: 0.0
+6750 Episodes_3302769 Frames: Average reward over last 100 Episodes: 0.0
+6800 Episodes_3307819 Frames: Average reward over last 100 Episodes: 0.0
+6850 Episodes_3312869 Frames: Average reward over last 100 Episodes: 0.0
+6900 Episodes_3317919 Frames: Average reward over last 100 Episodes: 0.0
+6950 Episodes_3322969 Frames: Average reward over last 100 Episodes: 0.0
+7000 Episodes_3328019 Frames: Average reward over last 100 Episodes: 0.0
+7050 Episodes_3333069 Frames: Average reward over last 100 Episodes: 0.0
+7100 Episodes_3338119 Frames: Average reward over last 100 Episodes: 0.0
+7150 Episodes_3343169 Frames: Average reward over last 100 Episodes: 0.0
+7200 Episodes_3348219 Frames: Average reward over last 100 Episodes: 0.0
+7250 Episodes_3353269 Frames: Average reward over last 100 Episodes: 0.0
+7300 Episodes_3358319 Frames: Average reward over last 100 Episodes: 0.0
+7350 Episodes_3363369 Frames: Average reward over last 100 Episodes: 0.0
+7400 Episodes_3368419 Frames: Average reward over last 100 Episodes: 0.0
