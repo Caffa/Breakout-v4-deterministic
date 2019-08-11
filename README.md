@@ -2,7 +2,6 @@ This project uses AI Gym's Breakout-v4-deterministic environment.
 
 ![](https://github.com/Caffa/Breakout-v4-deterministic/blob/master/Breakout%20Gifs/4FramesPerformance.gif)
 
-
 We trained 2 main models:
 - 16 thread model: looks at past 3 frames and considers 5 N-steps. Batch Size used is 20, Experience Queue size is 256.
 - 4 thread model: looks at past 8 frames and considers 10 N-steps. Batch Size used is 64, Experience Queue size is 64. Auto-Fire at start implemented.
@@ -34,6 +33,16 @@ The "Results/Important Results/Run with 16 Threads" folder contains the results 
 The "Results/Important Results/Deployment" contains the code and results for testing the 16 Threads A3C Model to find which trained weights were the best.
 
 We then ran the top 20 best trained weights for a 100 episodes each. The code and results of that are in "Results/Important Results/BenchMark/16 Thread" along with the end state images for each episode.
+
+# Application (GUI)
+![App UI](https://github.com/Caffa/Breakout-v4-deterministic/blob/master/Misc/appUI.png)
+Our application can be run by
+## Instructions
+In order to run the application,
+
+1. cd into the folder "Submission/Application - GUI" 
+2. If necessary, install the requirements according to the respective requirements.txt
+3. Run with python3 app.py
 
 # Source Code for A3C Models
 Can be found in the Submissions/Code Folder
