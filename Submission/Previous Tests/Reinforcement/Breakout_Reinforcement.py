@@ -190,7 +190,7 @@ def optimize_model(obs_list, act_list, rew_list):
         param.grad.data.clamp_(-1, 1)
     optimizer.step()
 
-max_num_episodes = 10 # Original is 50
+max_num_episodes = 500 # Original is 50
 i_episode = 0
 max_time = float('-inf')
 max_mean = float('-inf')

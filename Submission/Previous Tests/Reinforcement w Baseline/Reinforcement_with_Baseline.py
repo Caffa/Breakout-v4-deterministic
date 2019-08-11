@@ -1,118 +1,89 @@
-import os
-os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
-
-import csv
 import gym
 import math
 import random
-import numpy as np
+#import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-from collections import namedtuple
+#from collections import namedtuple
 from itertools import count
-from PIL import Image
-import numpy as np
+from torch import autograd
+#from PIL import Image
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import torchvision.transforms as T
-from torch import autograd
+import os
+import numpy as np
 
-#env = gym.make('MsPacmanDeterministic-v4')
-#env = gym.make('Breakout-ram-v0')
+import csv
+
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
 env = gym.make('BreakoutDeterministic-v4')
-action_meaning = env.unwrapped.get_action_meanings()
+#env = gym.make('MsPacman-v0')
+
+class MyFunc(autograd.Function):
+    @staticmethod
+    def forward(ctx, inp):
+        return inp.clone()
+    @staticmethod
+    def backward(ctx, gO):
+        # Error during the backward pass
+        raise RuntimeError("Some error in backward")
+        return gO.clone()
+
+def run_fn(a):
+    out = MyFunc.apply(a)
+    return out.sum()
 
 # set up matplotlib
 is_ipython = 'inline' in matplotlib.get_backend()
 if is_ipython:
     from IPython import display
     
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-#device = torch.device("cpu")
+device = torch.device("cpu")
 
-class PicturePred(nn.Module):
-    def __init__(self,in_channel,outputs):
-        super(PicturePred,self).__init__()
-        self.pi1 = nn.Sequential(
-                nn.Conv2d(in_channels = in_channel,out_channels=7,kernel_size=5),
-                nn.LeakyReLU(),
-                nn.Conv2d(in_channels = 7, out_channels = 5, kernel_size = 4, stride = 2),
-                nn.MaxPool2d(kernel_size = 3),
-                nn.Conv2d(in_channels = 5, out_channels = outputs, kernel_size = 5, stride = 3),
-                nn.LeakyReLU()
-                )
-        self.b1 = nn.Sequential(
-                nn.Conv2d(in_channels = in_channel,out_channels=7,kernel_size=5),
-                nn.LeakyReLU(),
-                nn.Conv2d(in_channels = 7, out_channels = 5, kernel_size = 4, stride = 2),
-                nn.MaxPool2d(kernel_size = 3),
-                nn.Conv2d(in_channels = 5, out_channels = outputs, kernel_size = 5, stride = 3),
-                nn.LeakyReLU()
-                )
-        self.softmax = nn.Sequential(nn.Linear(outputs*10*7, outputs, bias=True),nn.Softmax())
-        self.fcb = nn.Linear(outputs*10*7, 1, bias=True)
-        self.out = outputs
+"""3 fc"""
+class three_fc(nn.Module):
+    def __init__(self,inputs,outputs):
+        super(three_fc,self).__init__()
+        self.fc1 = nn.Linear(inputs[-1], 24, bias=True)
+        self.fc2 = nn.Linear(24, 24, bias=True) # Default for all bias is true
+        self.aftview = 24*inputs[1]
+        self.softmax = nn.Sequential(nn.Linear(self.aftview, outputs, bias=True),nn.Softmax())
     def forward(self,x):
-        pi = self.pi1(x)
-        #print(pi.shape)
-        b = self.b1(x)
-        #print(b.shape)
-        pi = pi.view(-1,self.out*10*7)
-        b = b.view(-1,self.out*10*7)
-        pi = self.softmax(pi).clamp(0.0001,1.0)
-        b = self.fcb(b)
-        return(pi,b)
-        
-class RAMPred(nn.Module):
-    def __init__(self,in_channel,outputs):
-        super(RAMPred,self).__init__()
-        self.pi1 = nn.Sequential(
-                nn.Linear(128,128,bias=True),
-                nn.LeakyReLU(),
-                nn.Linear(128,64,bias=True),
-                nn.LeakyReLU(),
-                nn.Linear(64,32,bias=True),
-                nn.LeakyReLU()
-                )
-        self.b1 = nn.Sequential(
-                nn.Linear(128,128,bias=True),
-                nn.LeakyReLU(),
-                nn.Linear(128,64,bias=True),
-                nn.LeakyReLU(),
-                nn.Linear(64,32,bias=True),
-                nn.LeakyReLU()
-                )
-        self.softmax = nn.Sequential(nn.Linear(in_channel*32, outputs, bias=True),nn.Softmax())
-        self.fcb = nn.Linear(in_channel*32, 1, bias=True)
-        self.inputs = in_channel
-    def forward(self,x):
-        pi = self.pi1(x)
-        #print(pi.shape)
-        b = self.b1(x)
-        #print(b.shape)
-        pi = pi.view(-1,self.inputs*32)
-        b = b.view(-1,self.inputs*32)
-        pi = self.softmax(pi).clamp(0.0001,1.0)
-        b = self.fcb(b)
-        return(pi,b)
-        
-class MyFunc(autograd.Function):
-  @staticmethod
-  def forward(ctx, inp):
-    return inp.clone()
-  @staticmethod
-  def backward(ctx, gO):
-    raise RuntimeError("Some error in backward")
-    return gO.clone()
+        x = F.leaky_relu(self.fc1(x))
+        x = F.leaky_relu(self.fc2(x))
+        x = x.view(-1,self.aftview)
+        x = self.softmax(x).clamp(0.001,1.0)
+        return(x)
 
-def run_fn(a):
-  out = MyFunc.apply(a)
-  return out.sum()
-  
+class BreakoutR(nn.Module):
+    def __init__(self,in_channel,outputs):
+        super(BreakoutR,self).__init__()
+        self.conv1 = nn.Conv2d(in_channels = in_channel,out_channels = 7, kernel_size = 5)
+        self.conv2 = nn.Conv2d(in_channels = 7, out_channels = 6, kernel_size = 4, stride = 2)
+        self.max1 = nn.MaxPool2d(kernel_size = 3)
+        self.conv3 = nn.Conv2d(in_channels = 6, out_channels = 5, kernel_size = 5, stride = 3)
+        self.fc1 = nn.Linear(70, 1)
+        self.fcp = nn.Sequential(nn.Linear(5,outputs,bias=True),nn.Softmax())
+        self.fcb = nn.Linear(5,1,bias=True)
+    def forward(self,x):
+        x = F.leaky_relu(self.conv1(x))
+        x = self.conv2(x)
+        x = self.max1(x)
+        x = F.leaky_relu(self.conv3(x))
+        x = x.view(-1,5,10*7)
+        x = self.fc1(x)
+        x = x.squeeze(2)
+        pi = self.fcp(x)
+        b = self.fcb(x)
+        return(pi,b)
+
 """Training"""
 GAMMA = 0.99
 EPS_START = 0.9
@@ -121,43 +92,31 @@ EPS_DECAY = 400
 #TARGET_UPDATE = 10
 
 
-def convert_to_grey_tensor(obs,device):
-  obs = torch.from_numpy(obs).float()
+def convert_to_grey_tensor(obs):
+  obs = torch.tensor(obs).float()
   obs = obs.transpose(1,2)
   obs = obs.transpose(0,1)
   obs = T.ToPILImage()(obs)
   obs = obs.convert('P')
-  obs = T.ToTensor()(obs)
-  obs = obs.to(device)
-  return(obs)
-
-def convert_to_ram_tensor(obs,device):
-  obs = torch.tensor([obs], device=device).float().unsqueeze(0).to(device)
+  obs = T.ToTensor()(obs).to(device)
   return(obs)
 
 # Get number of actions from gym action space
-observation = env.reset()
-#print(observation)
-#print(type(observation))
-#observation = convert_to_ram_tensor(observation,device)
-observation = convert_to_grey_tensor(env.reset(),device)
+observation = convert_to_grey_tensor(env.reset())
 obs_window = []
-prev = 4
+prev = 3
 for i in range(prev):
   obs_window.append(observation)
 observation = torch.cat(obs_window).unsqueeze(0)
-#observation = torch.cat(obs_window,1)
 n_inputs = list(observation.shape)
 observation = observation.float()
+#eps = np.finfo(np.float32).eps.item()
 n_actions = env.action_space.n
 print(n_inputs,n_actions)
 
-policy_net = PicturePred(prev,n_actions).to(device)
+policy_net = BreakoutR(prev,n_actions).to(device)
 
-print(policy_net(observation))
-#1/0
-
-lr = 8e-3
+lr = 0.01
 optimizer = optim.Adam(policy_net.parameters(),lr=lr) # default lr is 0.01
 
 # Create cnn class
@@ -176,7 +135,6 @@ def select_action(state):
             # second column on max result is index of where max element was
             # found, so we pick action with the larger expected reward.
             action = torch.distributions.categorical.Categorical(pi[0]).sample().unsqueeze(0).unsqueeze(0)
-            #action = pi.max(1)[1].view(1, 1)
     else:
         action = torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
     return(action)
@@ -206,43 +164,46 @@ def plot_durations():
         display.display(plt.gcf())
     return(last_mean)
 
-def optimize_model(obs_list, act_list, rew_list, gamma=GAMMA, N = 1):
-    Time = len(obs_list)
+def optimize_model(obs_list, act_list, rew_list):
+    Steps = len(obs_list)
+    for i in range(Steps):
+        t = Steps - 1 - i
+        if t != Steps-1:
+            rew_list[t] = rew_list[t] + GAMMA*rew_list[t+1]
+    #rew_mean = np.mean(rew_list)
+    #rew_std = np.std(rew_list)
+    #for i in range(Steps):
+    #  rew_list[i] = (rew_list[i] - rew_mean)/(rew_std + eps)
     act_list = torch.cat(act_list)
     obs_list = torch.cat(obs_list)
     rew_list = torch.tensor(rew_list, device=device).float().unsqueeze(1)
-
-    prb_list, b_list = policy_net(obs_list)
-    
-    anc_list = torch.zeros([Time, 1], device=device).float()
-    #print(Time)
-    for t in range(Time):
-        for n in range(min(N, Time-t)):
-            anc_list[t] += rew_list[t+n]*gamma**n
-        if t + N < Time:
-            anc_list[t] += b_list[t+N]*gamma**N
-    anc_list = rew_list.detach()
-    #print(anc_list.sum())
-    L2 = F.smooth_l1_loss(b_list,anc_list)
+    #print(rew_list)
+    prb_list, vst_list = policy_net(obs_list)
+    L2 = F.smooth_l1_loss(vst_list,rew_list)
+    #L2 = -torch.mean(rew_list-vst_list)
     prb_list = torch.gather(prb_list,1,act_list)
-    L1 = torch.mean(-torch.log(prb_list)*(anc_list - b_list.detach()))
+    L1 = torch.mean(-torch.log(prb_list)*(rew_list - vst_list.detach()))
     L = L1 + L2
-    optimizer.zero_grad()
     #with autograd.detect_anomaly():
-      #out = run_fn(L)
-      #out.backward()
+    #  out = run_fn(L)
+    #  optimizer.zero_grad()
+    #  out.backward()
+    #  for param in policy_net.parameters():
+    #    param.grad.data.clamp_(-1,1)
+    #  optimizer.step()
+    optimizer.zero_grad()
     L.backward()
     for param in policy_net.parameters():
         param.grad.data.clamp_(-1, 1)
     optimizer.step()
 
-max_num_episodes = 10 # Original is 50
+max_num_episodes = 500 # Original is 50
 i_episode = 0
 max_time = float('-inf')
 max_mean = float('-inf')
 
 # Create the csv file name where the values will be stored
-filename='Breakout_A2C_5step_Det4'
+filename='Breakout_Reinforcement_Baseline'
 
 # Check filename and add a number at the back if said file already exists
 if os.path.exists(filename+'.csv'):
@@ -259,15 +220,20 @@ readingfile_ascsv.writerow(['n','score','ave score','test score'])
 readingfile.flush()
 
 while i_episode <= max_num_episodes:
+    #print(policy_net.conv1.weight.grad)
+    #print(policy_net.conv2.weight.grad)
+    #print(policy_net.conv3.weight.grad)
+    #print(policy_net.fc1.weight.grad)
     if i_episode % 50 == 0 and i_episode != 0:
         for param_group in optimizer.param_groups:
             lr = lr/2
             print('new lr',lr)
             param_group['lr'] = lr
     observation = env.reset()
+    #observation = convert_to_grey_tensor(env.reset())
     obs_window = []
     for pr in range(prev):
-      obs_window.append(convert_to_grey_tensor(observation,device))
+      obs_window.append(convert_to_grey_tensor(observation))
     state = torch.cat(obs_window).unsqueeze(0)
     #print(state.shape)
     observ_list = []
@@ -282,23 +248,24 @@ while i_episode <= max_num_episodes:
         #reward = torch.tensor([reward], device=device,dtype=torch.float).unsqueeze(0)
         
         if not done:
-            obs_window.append(convert_to_grey_tensor(next_observation,device))
+            #next_observation = convert_to_grey_tensor(next_observation)
+            obs_window.append(convert_to_grey_tensor(next_observation))
             obs_window = obs_window[1:]
             next_state = torch.cat(obs_window).unsqueeze(0)
         else:
-            next_observation = None
+            #next_observation = None
             next_state = None
 
         observ_list.append(state)
         action_list.append(action)
         reward_list.append(reward)
-        #optimize_model(observ_list, action_list, reward_list, gamma=GAMMA, N = 8)
         state = next_state
         #print(state.shape)
         if done:
-            optimize_model(observ_list, action_list, reward_list, gamma=GAMMA, N = 5)
-            if max_time <= total_reward:
+            optimize_model(observ_list, action_list, reward_list)
+            if max_time < total_reward:
                 max_time = total_reward
+            episode_durations.append(total_reward)
             means = plot_durations()
             if max_mean < means:
                 max_mean = means
@@ -308,35 +275,40 @@ while i_episode <= max_num_episodes:
             break
 
     test_reward = '-'
-    if i_episode % 50 == 0 and i_episode > 0:
-        model_name='BreakoutA2C5stepDet4_'+str(i_episode)+'.pth'
+    if i_episode % 50 == 0 and i_episode != 0:
+        model_name='ReinforcementBreakoutBaseline'+str(i_episode)+'.pth'
         torch.save({'model':policy_net.state_dict(),'optimizer':optimizer.state_dict()}, model_name)
         policy_net.eval()
         observation = env.reset()
+        #observation = convert_to_grey_tensor(env.reset())
         #env.render()
         obs_window = []
         for pr in range(prev):
-          obs_window.append(convert_to_grey_tensor(observation,device))
+          obs_window.append(convert_to_grey_tensor(observation))
         state = torch.cat(obs_window).unsqueeze(0)
         test_reward = 0.0
         for t in count():
-            #print(t)
             #print(state.shape)
-            #print(policy_net(state))
-            action = policy_net(state)[0].max(1)[1].view(1, 1)
+            with torch.no_grad():
+                action = policy_net(state)[0].max(1)[1].view(1, 1)
+            # For some reason doing in eval mode always gives nan values
             next_observation, reward, done, info = env.step(action.item())
+            print('Step',t,'State:',policy_net(state))
+            print('Action:',action.item())
             #env.render()
-            #print(action_meaning[action.item()])
-            #print('Reward Gain:',reward)
+            #print(action.item(),reward)
             #print(done)
             test_reward += reward
-            #print('Reward:',test_reward)
+            #reward = torch.tensor([reward], device=device,dtype=torch.float).unsqueeze(0)
             if not done:
-                obs_window.append(convert_to_grey_tensor(next_observation,device))
+                #next_observation = convert_to_grey_tensor(next_observation)
+                obs_window.append(convert_to_grey_tensor(next_observation))
                 obs_window = obs_window[1:]
-                state = torch.cat(obs_window).unsqueeze(0)
+                next_state = torch.cat(obs_window).unsqueeze(0)
             else:
                 break
+            print('Picture Different:',1-torch.eq(state,next_state).all().item())
+            state = next_state
         policy_net.train()
         print('Test Score:',test_reward)
     readingfile_ascsv.writerow([i_episode,total_reward,means,test_reward])
